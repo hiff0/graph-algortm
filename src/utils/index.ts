@@ -77,7 +77,10 @@ export class Graph {
         }
     }
 
-    aStar(start: number, end: number, graph: Core): string {
+    aStar(start: number, end: number, graph: Core, isUseHeuristics: boolean): {
+        fullPath: string, 
+        path: string,
+    } {
         const elements = this._graphCy.elements()
         const nodes = elements.filter(node => node.isNode());
         nodes.style({
@@ -93,9 +96,10 @@ export class Graph {
             'line-color': '#ccc',
             'target-arrow-color': '#ccc',
         });
-        const astarPath = astar(this._graphMatrix, start, end, graph);
+        const { fullPath, path } = astar(this._graphMatrix, start, end, graph, isUseHeuristics); 
+        const astarPath = path;
         this.drawPath(astarPath);
-        return this.arrayPathToStringPath(astarPath);
+        return {fullPath: String(fullPath), path: this.arrayPathToStringPath(astarPath)};
     }
 
     antSearch(start: number, end: number, props: Props): string {

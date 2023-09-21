@@ -1,9 +1,12 @@
 import { Core } from 'cytoscape';
 
-function aStar(grid: number[][], start: number, goal: number, graph: Core): number[] {
+function aStar(grid: number[][], start: number, goal: number, graph: Core, isUseHeuristyc: boolean = false): {
+    fullPath: number, 
+    path: number[],
+} {
 
 
-    const grid2: number[][] = [
+    let grid2: number[][] = [
         [0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 8, 0],
         [0, 0, 0, 0, 0, 0],
@@ -13,27 +16,31 @@ function aStar(grid: number[][], start: number, goal: number, graph: Core): numb
     ];
 
     const nodesAndEdges = graph.elements();
-    for (let i = 0; i < grid.length; i += 1) {
-        for (let j = 0; j < grid[i].length; j += 1) {
-            if (grid[i][j] !== 0) {
-                const node1X = graph.nodes()[i].position().x;
-                const node1Y = graph.nodes()[i].position().y;
-                const node2X = graph.nodes()[j].position().x;
-                const node2Y = graph.nodes()[j].position().y;
-                const realLeangth = Math.abs(node1X - node2X) + Math.abs(node1Y - node2Y);
-                grid2[i][j] = Math.floor(realLeangth);
-                const edge = nodesAndEdges.filter(edge => edge.isEdge() && edge.source().id() === `${i + 1}` && edge.target().id() === `${j + 1}`);
-                edge.style({
-                    'width': 3,
-                    'label': `${Math.floor(realLeangth)}`,
-                    'target-arrow-shape': 'triangle',
-                    'curve-style': 'bezier',
-                    'line-color': '#ccc',
-                    'target-arrow-color': '#ccc',
-                })
+    if (isUseHeuristyc) {
+        for (let i = 0; i < grid.length; i += 1) {
+            for (let j = 0; j < grid[i].length; j += 1) {
+                if (grid[i][j] !== 0) {
+                    const node1X = graph.nodes()[i].position().x;
+                    const node1Y = graph.nodes()[i].position().y;
+                    const node2X = graph.nodes()[j].position().x;
+                    const node2Y = graph.nodes()[j].position().y;
+                    const realLeangth = Math.abs(node1X - node2X) + Math.abs(node1Y - node2Y);
+                    grid2[i][j] = Math.floor(realLeangth);
+                    const edge = nodesAndEdges.filter(edge => edge.isEdge() && edge.source().id() === `${i + 1}` && edge.target().id() === `${j + 1}`);
+                    edge.style({
+                        'width': 3,
+                        'label': `${Math.floor(realLeangth)}`,
+                        'target-arrow-shape': 'triangle',
+                        'curve-style': 'bezier',
+                        'line-color': '#ccc',
+                        'target-arrow-color': '#ccc',
+                    })
+                }
             }
         }
     }
+
+    grid2 = isUseHeuristyc ? grid2 : grid;
 
     // Проверяем, что стартовая и конечная точки находятся в пределах сетки
     let step = 1;
@@ -114,7 +121,7 @@ function aStar(grid: number[][], start: number, goal: number, graph: Core): numb
                 fullPath += grid2[path[i] - 1][path[i + 1] - 1];
             }
             console.log('Путь: ', fullPath);
-            return path;
+            return {fullPath, path};
         }
 
         // Иначе переносим вершину из открытого списка в закрытый список
@@ -145,7 +152,7 @@ function aStar(grid: number[][], start: number, goal: number, graph: Core): numb
         console.log('закрытые вершины', closedList);
     }
     // Если мы не нашли путь, возвращаем null
-    return [];
+    return { fullPath, path: []};
 }
 
 export default aStar;

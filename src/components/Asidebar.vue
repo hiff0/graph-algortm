@@ -7,6 +7,9 @@
             <input type="text" id="end" class="w-25" v-model="end">
             <button class="mt-5 w-25 button" @click="aStat(start, end)">A*</button>
             <button class="mt-3 w-50 button" @click="ant(start, end)">Муравьиный алгоритм</button>
+            
+            <!-- <label for="useHeuristic">Использовать эвристику</label><input type="checkbox" id="useHeuristic" v-model="isUseHeuristics">
+            {{isUseHeuristics}} -->
             <label for="ant" class="mt-3">Количество муравьев</label>
             <input type="text" id="ant" class="w-25" v-model="antCount">
             <label for="iteration" class="mt-3">Количество итераций</label>
@@ -21,6 +24,7 @@
             <input type="text" id="q" class="w-25" v-model="Q">
             <p class="mt-5">Ответ по A*: {{ astarpath }}</p>
             <p class="mt-3">Ответ по Муравьиному: {{ antpath }}</p>
+            <p class="mt-3">Полный путь: {{ fullpath }}</p>
         </div>
     </div>
 </template>
@@ -37,6 +41,7 @@ interface Data {
     alpha: number;
     betta: number;
     Q: number;
+    isUseHeuristics: boolean;
 }
 
 export default defineComponent({
@@ -50,10 +55,15 @@ export default defineComponent({
             alpha: 0.8,
             betta: 0.2,
             Q: 20,
+            isUseHeuristics: true,
         }
     },
     props: {
         astarpath: {
+            type: String,
+            required: true,
+        },
+        fullpath: {
             type: String,
             required: true,
         },
@@ -66,7 +76,8 @@ export default defineComponent({
         aStat(start: number, end: number) {
             this.$emit('astar', {
                 start: Number(start),
-                end: Number(end)
+                end: Number(end),
+                isUseHeuristics: this.isUseHeuristics,
             })
         },
         ant(start: number, end: number) {
@@ -80,7 +91,7 @@ export default defineComponent({
                 betta: Number(this.betta),
                 Q: Number(this.Q),
             })
-        }
+        },
     }
 })
 </script>

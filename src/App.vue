@@ -2,7 +2,7 @@
   <div class="container-fluid p-0 h-100">
     <div class="row h-100">
       <div class="col-12 col-md-4 p-0">
-        <Asidebar @astar="aStarAlg" @antalg="antAlg" :astarpath="astarpath" :antpath="antpath" />
+        <Asidebar @astar="aStarAlg" @antalg="antAlg" :astarpath="astarpath" :antpath="antpath" :fullpath="fullpath" />
       </div>
       <div class="col-12 col-md-8 p-0" id="graph">
         <Graph :graphMatrix="graphMatrix" />
@@ -52,13 +52,17 @@ onMounted(() => {
 
 let astarpath = ref<string>('');
 let antpath = ref<string>('');
+let fullpath = ref<string>('');
 
 function aStarAlg(points: {
   start: number,
-  end: number
+  end: number,
+  isUseHeuristic: boolean,
 }): void {
   if (points.start > 0 && points.end > 0 && points.start <= graphMatrix.length && points.end <= graphMatrix.length) {
-    astarpath.value = graph.aStar(points.start, points.end, graph.graphCy);
+    const { fullPath, path } = graph.aStar(points.start, points.end, graph.graphCy, points.isUseHeuristic);
+    fullpath.value = fullPath;
+    astarpath.value = path;
   } else {
     console.log(points);
   }
